@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "strict": true,
+        "skipLibCheck": true,
+        "outDir": "dist",
+        "removeComments": true,
+        "sourceMap": false,
+        "declarationMap": true,
+        "declaration": true,
+        "lib": ["es5", "es6", "esnext"],
+        "pretty": true,
+        "moduleResolution": "node",
+        "module": "commonjs",
+        "incremental": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "importsNotUsedAsValues": "remove",
+        "noUnusedLocals": true,
+        "preserveConstEnums": true,
+        "noImplicitReturns": true,
+        "useDefineForClassFields": true
+    },
+    "include": ["./src/**/*"]
+}
