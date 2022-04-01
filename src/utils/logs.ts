@@ -1,9 +1,8 @@
-import chalk from 'chalk';
+import { color } from 'console-log-colors';
+const { green, red } = color;
 
 export const log = (msg: string, ...rest: any[]) => {
-    console.log(chalk.green('[ THREADY ] '), msg, ...rest);
+    console.log(green('[ THREADY ] '), msg, ...rest);
 };
 
-export const error = (msg: string) => {
-    return new Error(`${chalk.red('[ THREADY ERROR ]')} ${msg}`);
-};
+export const error = (msg: string) => `${red('[ THREADY ERROR ]')} ${msg}`;

@@ -15,7 +15,7 @@ export class Thready implements ThreadyInterface {
     static #instantiated: boolean = false;
 
     constructor({ dir, maxThreads }: ThreadyOptions) {
-        if (Thready.#instantiated) throw error('Can only create one Thready instance!');
+        if (Thready.#instantiated) throw new Error(error('Can only create one Thready instance!'));
 
         this.numOfCpus = cpus().length;
 
@@ -37,9 +37,9 @@ export class Thready implements ThreadyInterface {
 
     async threadify({ script, args = [], debug = false, imports = [] }: ThreadifyOptions) {
         if (!script || typeof script !== 'function') {
-            throw error('Script must be a function!');
+            throw new Error(error('Script must be a function!'));
         }
-        if (typeof args !== 'object') throw error('Args must be an array!');
+        if (typeof args !== 'object') throw new Error(error('Args must be an array!'));
 
         try {
             await fs.access(this.workersDir);
@@ -54,11 +54,17 @@ export class Thready implements ThreadyInterface {
         this.info.waiting--;
 
         this.info.active++;
-        const data = await runWorker(workerFile, args);
-        this.info.active = this.info.active - 1;
+        let data: unknown;
 
-        await cleanWorkerFile(workerFile);
-        return data;
+        try {
+            data = await runWorker(workerFile, args);
+            this.info.active = this.info.active - 1;
+            return data;
+        } catch (err) {
+            throw new Error(`${err}`);
+        } finally {
+            await cleanWorkerFile(workerFile);
+        }
     }
 
     private async wait() {

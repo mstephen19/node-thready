@@ -29,7 +29,7 @@ const path_1 = __importDefault(require("path"));
 const _1 = require(".");
 const consts_1 = require("../consts");
 const createWorkerFile = async (script, { debug = false, imports = [] } = {}) => {
-    const fileName = (0, uuid_1.v4)() + '.js';
+    const fileName = (0, uuid_1.v4)() + '.cjs';
     const stringified = script.toString();
     const string = `const { workerData, parentPort, isMainThread, threadId } = require('worker_threads');
 ${imports.map(({ name, from }) => `const ${name} = require('${from}')\n`)}
@@ -56,7 +56,7 @@ runScript();`;
         await fs.writeFile(path_1.default.join(consts_1.WORKERS_PATH + `/${fileName}`), string);
     }
     catch (err) {
-        throw (0, _1.error)(`Failed to create worker file! ${err}`);
+        throw new Error((0, _1.error)(`Failed to create worker file! ${err}`));
     }
     return fileName;
 };

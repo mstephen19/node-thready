@@ -13,7 +13,7 @@ const runWorker = (workerFile: string, args: any[]) => {
         });
 
         worker.on('error', async (err) => {
-            reject(error(`Worker failed: ${err}`));
+            reject(new Error(error(`Worker failed: ${err}`)));
         });
 
         worker.on('message', (data) => {

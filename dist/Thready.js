@@ -36,7 +36,7 @@ class Thready {
     static #instantiated = false;
     constructor({ dir, maxThreads }) {
         if (Thready.#instantiated)
-            throw (0, utils_1.error)('Can only create one Thready instance!');
+            throw new Error((0, utils_1.error)('Can only create one Thready instance!'));
         this.numOfCpus = (0, os_1.cpus)().length;
         this.maxThreads = maxThreads || this.numOfCpus * 2;
         this.info = {
@@ -50,10 +50,10 @@ class Thready {
     }
     async threadify({ script, args = [], debug = false, imports = [] }) {
         if (!script || typeof script !== 'function') {
-            throw (0, utils_1.error)('Script must be a function!');
+            throw new Error((0, utils_1.error)('Script must be a function!'));
         }
         if (typeof args !== 'object')
-            throw (0, utils_1.error)('Args must be an array!');
+            throw new Error((0, utils_1.error)('Args must be an array!'));
         try {
             await fs.access(this.workersDir);
         }
@@ -65,10 +65,18 @@ class Thready {
         await this.waitForOpening();
         this.info.waiting--;
         this.info.active++;
-        const data = await (0, utils_1.runWorker)(workerFile, args);
-        this.info.active = this.info.active - 1;
-        await (0, utils_1.cleanWorkerFile)(workerFile);
-        return data;
+        let data;
+        try {
+            data = await (0, utils_1.runWorker)(workerFile, args);
+            this.info.active = this.info.active - 1;
+            return data;
+        }
+        catch (err) {
+            throw new Error(`${err}`);
+        }
+        finally {
+            await (0, utils_1.cleanWorkerFile)(workerFile);
+        }
     }
     async wait() {
         return new Promise((resolve) => setTimeout(() => {

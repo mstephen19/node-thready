@@ -1,20 +1,36 @@
 {
     "name": "node-thready",
-    "version": "1.0.0",
-    "description": "",
+    "version": "1.0.1",
+    "description": "Easily run multi-threaded operations in Node.js",
     "main": "dist/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mstephen19/node-thready"
+    },
+    "keywords": [
+        "thread",
+        "threads",
+        "async",
+        "parallel",
+        "worker",
+        "worker_threads",
+        "multithread"
+    ],
+    "author": "Matt Stephens",
+    "bugs": {
+        "url": "https://github.com/mstephen19/node-thready/issues"
+    },
+    "homepage": "https://github.com/mstephen19/node-thready",
+    "license": "MIT",
     "devDependencies": {
         "@types/node": "^17.0.23",
         "@types/uuid": "^8.3.4"
     },
     "dependencies": {
-        "chalk": "^5.0.1",
+        "console-log-colors": "^0.2.3",
         "uuid": "^8.3.2"
     }
 }

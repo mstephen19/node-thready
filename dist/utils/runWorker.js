@@ -16,7 +16,7 @@ const runWorker = (workerFile, args) => {
             env: worker_threads_1.SHARE_ENV,
         });
         worker.on('error', async (err) => {
-            reject((0, _1.error)(`Worker failed: ${err}`));
+            reject(new Error((0, _1.error)(`Worker failed: ${err}`)));
         });
         worker.on('message', (data) => {
             resolve(data);

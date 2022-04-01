@@ -7,7 +7,7 @@ import { WORKERS_PATH } from '../consts';
 import { ThreadifyOptions } from '../types';
 
 const createWorkerFile = async (script: Function, { debug = false, imports = [] }: Partial<ThreadifyOptions> = {}) => {
-    const fileName = v4() + '.js';
+    const fileName = v4() + '.cjs';
     const stringified = script.toString();
 
     const string = `const { workerData, parentPort, isMainThread, threadId } = require('worker_threads');
@@ -35,7 +35,7 @@ runScript();`;
     try {
         await fs.writeFile(path.join(WORKERS_PATH + `/${fileName}`), string);
     } catch (err) {
-        throw error(`Failed to create worker file! ${err}`);
+        throw new Error(error(`Failed to create worker file! ${err}`));
     }
 
     return fileName;
