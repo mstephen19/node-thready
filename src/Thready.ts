@@ -35,7 +35,7 @@ export class Thready implements ThreadyInterface {
         log('Instantiated.');
     }
 
-    async threadify({ script, args = [], debug = false, imports = [] }: ThreadifyOptions) {
+    async threadify({ script, args = [], debug = false, imports = [], deleteOnError = true }: ThreadifyOptions) {
         if (!script || typeof script !== 'function') {
             throw new Error(error('Script must be a function!'));
         }
@@ -63,7 +63,7 @@ export class Thready implements ThreadyInterface {
         } catch (err) {
             throw new Error(`${err}`);
         } finally {
-            await cleanWorkerFile(workerFile);
+            if (deleteOnError) await cleanWorkerFile(workerFile);
         }
     }
 

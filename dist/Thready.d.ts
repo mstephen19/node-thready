@@ -6,7 +6,7 @@ export declare class Thready implements ThreadyInterface {
     readonly maxThreads: number;
     readonly workersDir: string;
     constructor({ dir, maxThreads }: ThreadyOptions);
-    threadify({ script, args, debug, imports }: ThreadifyOptions): Promise<unknown>;
+    threadify({ script, args, debug, imports, deleteOnError }: ThreadifyOptions): Promise<unknown>;
     private wait;
     private waitForOpening;
 }

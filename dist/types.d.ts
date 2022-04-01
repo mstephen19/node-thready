@@ -17,6 +17,7 @@ export interface ThreadifyOptions {
     args?: any[];
     debug?: boolean;
     imports?: ImportInterface[];
+    deleteOnError?: boolean;
 }
 export interface ThreadyInfo {
     active: number;

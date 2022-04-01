@@ -48,7 +48,7 @@ class Thready {
         Thready.#instantiated = true;
         (0, utils_1.log)('Instantiated.');
     }
-    async threadify({ script, args = [], debug = false, imports = [] }) {
+    async threadify({ script, args = [], debug = false, imports = [], deleteOnError = true }) {
         if (!script || typeof script !== 'function') {
             throw new Error((0, utils_1.error)('Script must be a function!'));
         }
@@ -75,7 +75,8 @@ class Thready {
             throw new Error(`${err}`);
         }
         finally {
-            await (0, utils_1.cleanWorkerFile)(workerFile);
+            if (deleteOnError)
+                await (0, utils_1.cleanWorkerFile)(workerFile);
         }
     }
     async wait() {
