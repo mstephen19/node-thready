@@ -1,6 +1,6 @@
 {
     "name": "node-thready",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Easily run multi-threaded operations in Node.js",
     "main": "dist/index.js",
     "scripts": {

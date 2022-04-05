@@ -34,6 +34,11 @@ class Thready {
         Thready.#instantiated = true;
     }
 
+    /**
+     * Initialize Thready
+     * 
+     * @param initOptions The "dir" key is required, and should point to the directory you'd like the /workers folder to live
+     */
     init({ dir, maxThreads }: InitOptions) {
         if (typeof dir !== 'string') throw new Error(error('dir must be a string!'));
 
@@ -48,6 +53,10 @@ class Thready {
         log('Initialized');
     }
 
+    /**
+     * 
+     * @param options An object containing the script, any args and imports, and other options
+     */
     async go(options: GoOptions): Promise<unknown> {
         const { script, args = [], debug = false, imports = [], deleteOnError = true, waited = false } = options as GoOptions & { waited?: boolean };
 

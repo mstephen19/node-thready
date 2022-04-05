@@ -27,7 +27,7 @@ import express from 'express';
 import { Thready } from 'node-thready';
 
 // Instantiate the class
-const thready = new Thready({
+Thready.init({
     dir: __dirname,
 });
 
@@ -55,7 +55,7 @@ const runWhileLoop = (msg: string) => {
 // Even if we promisify runWhileLoop, it still blocks all other requests until it's done
 app.get('/heavy', async (_, res) => {
     // By using Thready, this massive while-loop no longer blocks the main thread
-    const data: string = await thready.threadify({
+    const data: string = await Thready.go({
         script: runWhileLoop,
         args: ['hello world'],
         debug: true,
@@ -65,14 +65,14 @@ app.get('/heavy', async (_, res) => {
 });
 ```
 
-## `new Thready(ThreadyOptions)`
+## `Thready.init(InitOptions)`
 
-Create a new instance of Thready.
+Initialize Thready.
 
 > Only **one** Thready instance can be created.
 
 ```TypeScript
-interface ThreadyOptions {
+interface InitOptions {
     // The directory you want the /workers files folder to live
     dir: string;
     // If not provided, will be calculated based on cores
@@ -83,13 +83,13 @@ interface ThreadyOptions {
 **Usage:**
 
 ```TypeScript
-const thready = new Thready({
+Thready.init({
     dir: __dirname,
     maxThreads: 4,
 })
 ```
 
-## `instance.threadify(ThreadifyOptions)`
+## `Thready.go(GoOptions)`
 
 > This is **asynchronous**
 
@@ -105,12 +105,12 @@ An entirely non-blocking operation which does the following:
 If the worker throws an error, the error will be thrown, and the worker file will still be deleted. This can be overridden with `deleteOnError` for debugging purposes.
 
 ```TypeScript
-interface ThreadifyOptions {
+interface GoOptions {
     // The script to run
     script: Function;
     // Arguments to be passed to the script
     args?: any[];
-    // Debug logs
+    // Debug logs (includes threadId, active threads, and pending operations)
     debug?: boolean;
     // Any modules that should be imported at the top of the worker file
     imports?: ImportInterface[];
@@ -124,7 +124,7 @@ interface ThreadifyOptions {
 ```TypeScript
 import { Thready } from 'node-thready';
 
-const thready = new Thready({
+Thready.init({
     dir: __dirname,
 });
 
@@ -138,7 +138,7 @@ const runWhileLoop = (msg: string) => {
 };
 
 (async () => {
-    const msg = await thready.threadify({
+    const msg = await Thready.go({
         script: runWhileLoop,
         args: ['hello world'],
     });
@@ -200,7 +200,7 @@ const googleLoop = async () => {
 };
 
 (async () => {
-    const data = await thready.threadify({
+    const data = await Thready.go({
         script: googleLoop,
         imports: [
             // This will be translated to => "const axios = require('axios')"
