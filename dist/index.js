@@ -1,5 +1,8 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Thready = void 0;
-const Thready_1 = require("./Thready");
-Object.defineProperty(exports, "Thready", { enumerable: true, get: function () { return Thready_1.Thready; } });
+const Thready_1 = __importDefault(require("./Thready"));
+exports.Thready = Thready_1.default;

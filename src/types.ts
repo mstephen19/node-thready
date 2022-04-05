@@ -1,11 +1,4 @@
-export interface ThreadyInterface {
-    numOfCpus: number;
-    info: ThreadyInfo;
-    maxThreads: number;
-    workersDir: string;
-}
-
-export interface ThreadyOptions {
+export interface InitOptions {
     dir: string;
     maxThreads?: number;
 }
@@ -15,7 +8,7 @@ export interface ImportInterface {
     from: string;
 }
 
-export interface ThreadifyOptions {
+export interface GoOptions {
     script: Function;
     args?: any[];
     debug?: boolean;

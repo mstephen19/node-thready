@@ -1,7 +1,7 @@
 import { Worker, SHARE_ENV } from 'worker_threads';
 import { WORKERS_PATH } from '../consts';
 import path from 'path';
-import { error } from '.';
+import { error } from '../utils';
 
 const runWorker = (workerFile: string, args: any[]) => {
     return new Promise((resolve, reject) => {
@@ -13,7 +13,7 @@ const runWorker = (workerFile: string, args: any[]) => {
         });
 
         worker.on('error', async (err) => {
-            reject(new Error(error(`Worker failed: ${err}`)));
+            reject(new Error(error(`Worker failed: ${err.message}`)));
         });
 
         worker.on('message', (data) => {

@@ -23,10 +23,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.error = exports.log = exports.runWorker = exports.cleanWorkerFile = exports.createWorkerFile = void 0;
-const createWorkerFile_1 = __importStar(require("./createWorkerFile"));
+const createWorkerFile_1 = __importStar(require("../scripts/createWorkerFile"));
 exports.createWorkerFile = createWorkerFile_1.default;
 Object.defineProperty(exports, "cleanWorkerFile", { enumerable: true, get: function () { return createWorkerFile_1.cleanWorkerFile; } });
-const runWorker_1 = __importDefault(require("./runWorker"));
+const runWorker_1 = __importDefault(require("../scripts/runWorker"));
 exports.runWorker = runWorker_1.default;
 const logs_1 = require("./logs");
 Object.defineProperty(exports, "log", { enumerable: true, get: function () { return logs_1.log; } });

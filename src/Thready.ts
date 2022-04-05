@@ -1,83 +1,98 @@
 import { cpus } from 'os';
 import * as fs from 'fs/promises';
-
-import { ThreadifyOptions, ThreadyInfo, ThreadyInterface, ThreadyOptions } from './types';
-import { cleanWorkerFile, createWorkerFile, runWorker, log, error } from './utils';
-import { setWorkersPath } from './consts';
 import path from 'path';
 
-export class Thready implements ThreadyInterface {
+import { GoOptions, ThreadyInfo, InitOptions } from './types';
+import { cleanWorkerFile, createWorkerFile, runWorker, log, error } from './utils';
+import { setWorkersPath } from './consts';
+
+class Thready {
     readonly numOfCpus: number;
-    info: ThreadyInfo;
-    readonly maxThreads: number;
-    readonly workersDir: string;
+    readonly info: ThreadyInfo;
+    private maxThreads: number;
+    private workersDir: string;
+    private initialized: boolean;
 
     static #instantiated: boolean = false;
 
-    constructor({ dir, maxThreads }: ThreadyOptions) {
-        if (Thready.#instantiated) throw new Error(error('Can only create one Thready instance!'));
+    constructor() {
+        if (Thready.#instantiated) throw new Error(error("Can't construct a new instance of Thready!"));
 
         this.numOfCpus = cpus().length;
 
-        this.maxThreads = maxThreads || this.numOfCpus * 2;
+        this.maxThreads = this.numOfCpus * 2;
 
         this.info = {
             active: 0,
             waiting: 0,
         };
 
+        this.initialized = false;
+
+        this.workersDir = '';
+
+        Thready.#instantiated = true;
+    }
+
+    init({ dir, maxThreads }: InitOptions) {
+        if (typeof dir !== 'string') throw new Error(error('dir must be a string!'));
+
         this.workersDir = path.join(dir + '/workers');
+
+        if (maxThreads && typeof maxThreads === 'number') this.maxThreads = maxThreads;
 
         setWorkersPath(this.workersDir);
 
-        Thready.#instantiated = true;
+        this.initialized = true;
 
-        log('Instantiated.');
+        log('Initialized');
     }
 
-    async threadify({ script, args = [], debug = false, imports = [], deleteOnError = true }: ThreadifyOptions) {
-        if (!script || typeof script !== 'function') {
-            throw new Error(error('Script must be a function!'));
-        }
+    async go(options: GoOptions): Promise<unknown> {
+        const { script, args = [], debug = false, imports = [], deleteOnError = true, waited = false } = options as GoOptions & { waited?: boolean };
+
+        // Validations
+        if (!this.initialized) throw new Error(error('Thready must first be initialized!'));
+        if (!script || typeof script !== 'function') throw new Error(error('Script must be a function!'));
         if (typeof args !== 'object') throw new Error(error('Args must be an array!'));
 
-        try {
-            await fs.access(this.workersDir);
-        } catch {
-            await fs.mkdir(this.workersDir);
+        // If the max threads has been reached, recursively wait
+        if (this.info.active >= this.maxThreads) {
+            if (!waited) this.info.waiting += 1;
+            await new Promise((r) => setTimeout(r, 100));
+            return this.go({ ...options, waited: true } as GoOptions);
         }
 
-        const workerFile = await createWorkerFile(script, { debug, imports });
+        if (waited) this.info.waiting -= 1;
+        this.info.active += 1;
 
-        this.info.waiting++;
-        await this.waitForOpening();
-        this.info.waiting--;
+        // Create /worker folder if doesn't already exist
+        await this.ensureWorkersDirectory();
 
-        this.info.active++;
+        // Create and add workerfile to the /worker directory
+        const workerFile = await createWorkerFile(script, { debug, imports, info: this.info });
+
         let data: unknown;
 
         try {
             data = await runWorker(workerFile, args);
-            this.info.active = this.info.active - 1;
+            this.info.active -= 1;
             return data;
         } catch (err) {
-            throw new Error(`${err}`);
+            const e = err as Error;
+            throw new Error(`${e?.message}`);
         } finally {
             if (deleteOnError) await cleanWorkerFile(workerFile);
         }
     }
 
-    private async wait() {
-        return new Promise((resolve) =>
-            setTimeout(() => {
-                if (this.info.active < this.maxThreads) resolve(true);
-                else resolve(false);
-            }, 1000)
-        );
-    }
-
-    private async waitForOpening() {
-        while (!(await this.wait())) {}
-        return true;
+    private async ensureWorkersDirectory() {
+        try {
+            await fs.access(this.workersDir);
+        } catch {
+            return fs.mkdir(this.workersDir);
+        }
     }
 }
+
+export default new Thready();
